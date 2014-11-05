@@ -1,9 +1,5 @@
-### Dockerfile
-#
-#   See https://github.com/russmckendrick/docker/
-
-FROM russmckendrick/base:latest
-MAINTAINER Russ McKendrick <russ@mckendrick.io>
+FROM greencape/base:latest
+MAINTAINER Niels Braczek <nbraczek@bsds.de>
 
 ADD nginx.repo /etc/yum.repos.d/
 RUN yum -y install nginx mariadb php php-fpm php-mysql php-pdo php-devel php-gd php-pecl-memcache php-pspell php-snmp php-xmlrpc php-xml php-mcrypt php-mbstring php-imap php-pecl-xdebug php-pecl-xhprof python-setuptools && yum clean all
