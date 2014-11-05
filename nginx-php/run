@@ -3,8 +3,8 @@ set -e
 sed -i 's/memory_limit = .*/memory_limit = 768M/' /etc/php.ini
 sed -i 's/post_max_size = .*/post_max_size = 50M/' /etc/php.ini
 echo 'date.timezone = "Europe/London"' >> /etc/php.ini
-echo "=> Configuring NGINX ..."
-echo "=> Using default NGINX configuration"
+echo "=> Configuring Nginx ..."
+echo "=> Using default Nginx configuration"
 echo "=> Configuring PHP-FPM ..."
 if [[ $PHP_POOL != "" ]]; then
 echo "=> Custom pool name ($PHP_POOL) being used"
