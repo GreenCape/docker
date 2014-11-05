@@ -1,0 +1,26 @@
+<VirtualHost *:80>
+  ServerAlias localhost www.*.dev #wildcard catch all
+  VirtualDocumentRoot /var/www/%2/web
+  UseCanonicalName Off
+  ErrorLog /var/log/apache2/error.log
+  CustomLog /var/log/apache2/access.log "%h %l %u %t \"%r\" %>s %b"
+  <Directory "/var/www">
+    Options Indexes FollowSymLinks MultiViews
+    AllowOverride All
+    Order allow,deny
+    Allow from all
+  </Directory>
+</VirtualHost>
+<VirtualHost *:80>
+  ServerAlias localhost *.dev #wildcard catch all
+  VirtualDocumentRoot /var/www/%1/web
+  UseCanonicalName Off
+  ErrorLog /var/log/apache2/error.log
+  CustomLog /var/log/apache2/access.log "%h %l %u %t \"%r\" %>s %b"
+  <Directory "/var/www">
+    Options Indexes FollowSymLinks MultiViews
+    AllowOverride All
+    Order allow,deny
+    Allow from all
+  </Directory>
+</VirtualHost>
