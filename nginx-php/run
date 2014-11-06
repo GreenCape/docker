@@ -13,7 +13,7 @@ else
 echo "=> Default pool name (www) being used"
 fi
 echo "=> Done!"
-echo "=> Setting user & group (webserver)"
+echo "=> Setting user & group (webserver:webserver)"
 sed -i '/^user/c \user = webserver' /etc/php-fpm.d/www.conf
 sed -i '/^group/c \group = webserver' /etc/php-fpm.d/www.conf
 echo "=> Done!"
