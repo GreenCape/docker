@@ -28,16 +28,19 @@ If you didn't set `MYSQL_ROOT_PASSWORD` then you can run `docker logs` to see wh
 CONTAINER ID        IMAGE                                COMMAND              CREATED             STATUS              PORTS                    NAMES
 26b504347376        greencape/mariadb:latest        /usr/local/bin/run   4 seconds ago       Up 3 seconds        0.0.0.0:3306->3306/tcp   mydbserver     
 [root@docker ~]# docker logs 26b504347376
-=> An empty or uninitialized MariaDB volume is detected in /var/lib/mysql
-=> Installing MariaDB ...
-=> Done!
-=> Creating MariaDB root user with a random password
-=> Done!
+Installing MariaDB
+Starting MariaDB Server
+Setting a random password for user 'root'
+Stopping MariaDB Server
+Done.
+
 ========================================================================
 You can now connect to this MariaDB Server using:
 
     mysql -uroot -pc735bacb -h<host> -P<port> --protocol=TCP
 ========================================================================
+
+Starting MariaDB Server using its startup script
 [root@docker ~]# mysql -uroot -pc735bacb --protocol=TCP
 Welcome to the MariaDB monitor.  Commands end with ; or \g.
 Your MariaDB connection id is 2

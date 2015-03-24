@@ -1,34 +1,29 @@
 #!/bin/bash
 set -e
+
 sed -i 's/memory_limit = .*/memory_limit = 768M/' /etc/php.ini
 sed -i 's/post_max_size = .*/post_max_size = 50M/' /etc/php.ini
 echo 'date.timezone = "Europe/London"' >> /etc/php.ini
-echo "=> Configuring Nginx ..."
-echo "=> Using default Nginx configuration"
-echo "=> Configuring PHP-FPM ..."
+
+echo "Configuring Nginx using default Nginx configuration"
 if [[ $PHP_POOL != "" ]]; then
-echo "=> Custom pool name ($PHP_POOL) being used"
-sed -i '/[www]/c\['$PHP_POOL']' /etc/php-fpm.d/www.conf
+    echo "Using custom pool name [$PHP_POOL]"
+    sed -i '/[www]/c\['$PHP_POOL']' /etc/php-fpm.d/www.conf
 else
-echo "=> Default pool name (www) being used"
-fi
-echo "=> Done!"
-echo "=> Setting user & group (webserver:webserver)"
-sed -i '/^user/c \user = webserver' /etc/php-fpm.d/www.conf
-sed -i '/^group/c \group = webserver' /etc/php-fpm.d/www.conf
-echo "=> Done!"
-echo "=> Allowing listen from anywhere"
-sed -i 's/^listen.allowed_clients/;listen.allowed_clients/' /etc/php-fpm.d/www.conf
-echo "=> Done!"
-echo "=> ... Finished configuring PHP-FPM"
-if [[ $RUN_COMPOSER != "" ]]; then
-echo "=> ... Running composer install"
-su -s /bin/sh webserver -c "cd /var/www/html/ && composer install"
-echo "=> Done!"
-else
-echo "=> Composer not run"
+    echo "Using default pool name [www]"
 fi
 
-echo "=> ... Starting Services"
-exec supervisord -n > /dev/null 2>&1
-echo "=> Done!"
+echo "Setting user and group (webserver:webserver)"
+sed -i '/^user/c \user = webserver' /etc/php-fpm.d/www.conf
+sed -i '/^group/c \group = webserver' /etc/php-fpm.d/www.conf
+
+echo "Allowing listen from anywhere"
+sed -i 's/^listen.allowed_clients/;listen.allowed_clients/' /etc/php-fpm.d/www.conf
+
+if [[ $RUN_COMPOSER != "" ]]; then
+    echo "Running composer install"
+    su -s /bin/sh webserver -c "cd /var/www/html/ && composer install"
+fi
+
+echo "Starting services"
+exec supervisord -n

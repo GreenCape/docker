@@ -11,74 +11,65 @@ chown -R mysql:mysql $VOLUME_HOME
 
 if [[ ! -d $VOLUME_HOME/mysql ]]; then
 
-echo "=> An empty or uninitialized MariaDB volume is detected in $VOLUME_HOME"
-echo "=> Installing MariaDB ..."
-mysql_install_db > /dev/null 2>&1
-echo "=> Done!"  
+    echo "Installing MariaDB"
+    mysql_install_db > /dev/null 2>&1
+    chown -R mysql:mysql $VOLUME_HOME
 
-chown -R mysql:mysql $VOLUME_HOME
+    echo "Starting MariaDB Server"
+    /usr/sbin/runuser -u mysql /usr/libexec/mysqld > /dev/null 2>&1 &
+    sleep 5
 
-PASS=${MYSQL_ROOT_PASSWORD:-$(cat /dev/urandom | tr -cd 'a-f0-9' | head -c 8)}
-_word=$( [ ${MYSQL_ROOT_PASSWORD} ] && echo "user defined" || echo "a random" )
+    PASS=${MYSQL_ROOT_PASSWORD:-$(cat /dev/urandom | tr -cd 'a-f0-9' | head -c 8)}
+    _word=$( [ ${MYSQL_ROOT_PASSWORD} ] && echo "user defined" || echo "a random" )
 
-echo "=> Creating MariaDB root user with ${_word} password"
-
-/usr/sbin/runuser -u mysql /usr/libexec/mysqld > /dev/null 2>&1 &
-sleep 5
-
-tfile=`mktemp`
-if [[ ! -f "$tfile" ]]; then
-    return 1
-fi
-cat << EOF > $tfile
-USE mysql;
-GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '$PASS';
-FLUSH PRIVILEGES;
-EOF
-if [[ $MYSQL_DATABASE != "" ]]; then
-    echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` CHARACTER SET utf8 COLLATE utf8_general_ci;" >> $tfile
-    if [[ $MYSQL_USER != "" ]]; then
-        echo "GRANT ALL ON \`$MYSQL_DATABASE\`.* to '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';" >> $tfile
+    tfile=`mktemp`
+    if [[ ! -f "$tfile" ]]; then
+        return 1
     fi
-fi
-mysql < $tfile
-rm -f $tfile
-
-if [[ $MYSQL_DATABASE != "" ]]; then
-echo "=> Creating a database called '$MYSQL_DATABASE'"
-    if [[ $MYSQL_USER != "" ]]; then
-echo "=> Adding user '$MYSQL_USER' with a password of '$MYSQL_PASSWORD'"
+    echo "Setting ${_word} password for user 'root'"
+    cat << EOF > $tfile
+    USE mysql;
+    GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '$PASS';
+    FLUSH PRIVILEGES;
+    EOF
+    if [[ $MYSQL_DATABASE != "" ]]; then
+        echo "Creating database '$MYSQL_DATABASE'"
+        echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` CHARACTER SET utf8 COLLATE utf8_general_ci;" >> $tfile
+        if [[ $MYSQL_USER != "" ]]; then
+            echo "Adding user '$MYSQL_USER' with password '$MYSQL_PASSWORD' for '$MYSQL_DATABASE'"
+            echo "GRANT ALL ON \`$MYSQL_DATABASE\`.* to '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';" >> $tfile
+        fi
     fi
-fi
+    mysql < $tfile
+    rm -f $tfile
 
-if [[ $MYSQL_IMPORT != "" ]]; then
-echo "=> Importing database a database called to '$MYSQL_DATABASE'"
-mysql -u root $MYSQL_DATABASE < /root/import.sql
-fi
+    if [[ $MYSQL_IMPORT != "" ]]; then
+        echo "Importing import.sql into '$MYSQL_DATABASE'"
+        mysql -u root $MYSQL_DATABASE < /root/import.sql
+    fi
 
-kill %1 > /dev/null 2>&1
-/usr/sbin/runuser -u mysql pkill mysqld > /dev/null 2>&1
-wait
+    echo "Stopping MariaDB Server"
+    kill %1 > /dev/null 2>&1
+    /usr/sbin/runuser -u mysql pkill mysqld > /dev/null 2>&1
+    wait
 
 else
-    echo "=> Using an existing volume of MariaDB"
+    echo "Using an existing volume of MariaDB"
 fi
 
-echo "=> Done!"
+echo "Done."
+echo ""
 echo "========================================================================"
-echo "You can now connect to this MariaDB Server using:"
+echo "You can now connect to this MariaDB Server using"
 echo ""
 echo "    mysql -uroot -p$PASS -h<host> -P<port> --protocol=TCP"
 if [[ $MYSQL_USER != "" ]]; then
-echo ""
-echo " or:"
-echo ""
-echo "    mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h<host> -P<port> --protocol=TCP"
-fi
-if [[ $MYSQL_IMPORT != "" ]]; then
-echo ""
-echo "    Imported SQL to called to '$MYSQL_DATABASE'"
+    echo ""
+    echo " or:"
+    echo ""
+    echo "    mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h<host> -P<port> --protocol=TCP"
 fi
 echo "========================================================================"
-
-exec mysqld_safe > /dev/null 2>&1
+echo ""
+echo "Starting MariaDB Server using its startup script"
+exec mysqld_safe

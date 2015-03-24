@@ -82,7 +82,7 @@ If not empty, the `default.conf` file will be replaced by a symlink to `/var/www
 
 **`PHP_POOL`**
 
-The pool name to use, the default is `[www]`
+The pool name to use (without brackets), the default is `[www]`
 
 **`RUN_COMPOSER`**
 
