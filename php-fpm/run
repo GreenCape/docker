@@ -1,0 +1,30 @@
+#!/bin/bash
+set -e
+
+echo "Configuring PHP-FPM"
+
+if [[ $PHP_POOL != "" ]]; then
+    echo "Using custom FPM pool [$PHP_POOL]"
+    sed -i '/[www]/c\['$PHP_POOL']' /etc/php-fpm.d/www.conf
+else
+    echo "Using default FPM pool [www]"
+fi
+
+if [[ $PHP_PORT != "" ]]; then
+    PHP_PORT=9000
+fi
+echo "Listening to port $PHP_PORT"
+sed -i '/^listen/c \listen = 0.0.0.0:'$PHP_PORT'' /etc/php-fpm.d/www.conf
+
+if [[ $PHP_USER != "" ]]; then
+    PHP_USER="webserver"
+fi
+echo "Setting user and group ($PHP_USER:$PHP_USER)"
+sed -i '/^user/c \user = '$PHP_USER'' /etc/php-fpm.d/www.conf
+sed -i '/^group/c \group = '$PHP_USER'' /etc/php-fpm.d/www.conf
+
+echo "Allowing listen from anywhere"
+sed -i 's/^listen.allowed_clients/;listen.allowed_clients/' /etc/php-fpm.d/www.conf
+
+echo "Starting PHP service"
+exec php-fpm -F

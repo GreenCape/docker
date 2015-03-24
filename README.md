@@ -10,12 +10,14 @@ To connect to these containers use `nsenter` / `docker-enter`, see [this blog po
 ## General Containers
 
 - [Base](https://registry.hub.docker.com/u/greencape/base/) - Base build for use with other Docker builds
-- [NGINX Proxy](https://registry.hub.docker.com/u/greencape/nginx-proxy/) - A reverse proxy container
+- [Nginx Proxy](https://registry.hub.docker.com/u/greencape/nginx-proxy/) - A reverse proxy container
 
 ## CentOS 7 LEMP Stack
 
-- [NGINX & PHP 5.4](https://registry.hub.docker.com/u/greencape/nginx-php/) - An all in-one NGINX / PHP container
-- [NGINX & HHVM](https://registry.hub.docker.com/u/greencape/nginx-hhvm/) - An all in-one NGINX / HHVM container
+- [Nginx](https://registry.hub.docker.com/u/greencape/nginx/) - Nginx webserver for use with a [PHP-FPM container](https://registry.hub.docker.com/u/greencape/php-fpm/)
+- [PHP 5.4 / PHP-FPM](https://registry.hub.docker.com/u/greencape/php-fpm/)- PHP 5.4 service using PHP-FPM for use with a [Nginx Container](https://registry.hub.docker.com/u/greencape/nginx/)
+- [Nginx / PHP 5.4](https://registry.hub.docker.com/u/greencape/nginx-php/) - An all in-one Nginx / PHP container
+- [Nginx / HHVM](https://registry.hub.docker.com/u/greencape/nginx-hhvm/) - An all in-one Nginx / HHVM container
 - [MariaDB 10](https://registry.hub.docker.com/u/greencape/mariadb/) - A MariaDB 5.5 container, best used with other containers
 
 To run a stack you would run something like;
