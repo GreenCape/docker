@@ -64,11 +64,10 @@ echo "You can now connect to this MariaDB Server using"
 echo ""
 echo "    mysql -uroot -p$PASS -h<host> -P<port> --protocol=TCP"
 if [[ $MYSQL_USER != "" ]]; then
-    echo ""
-    echo " or:"
-    echo ""
+    echo "or"
     echo "    mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h<host> -P<port> --protocol=TCP"
 fi
+    echo ""
 echo "========================================================================"
 echo ""
 echo "Starting MariaDB Server using its startup script"
