@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-echo "Configuring Nginx using default Nginx configuration"
-
 if [[ $RUN_COMPOSER != "" ]]; then
     echo "Running composer install"
     su -s /bin/sh webserver -c "cd /var/www/html/ && composer install"

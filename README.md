@@ -15,11 +15,12 @@ To connect to these containers use `nsenter` / `docker-enter`, see [this blog po
 ## CentOS 7 LEMP Stack
 
 - [NGINX & PHP 5.4](https://registry.hub.docker.com/u/greencape/nginx-php/) - An all in-one NGINX / PHP container
+- [NGINX & HHVM](https://registry.hub.docker.com/u/greencape/nginx-hhvm/) - An all in-one NGINX / HHVM container
 - [MariaDB 10](https://registry.hub.docker.com/u/greencape/mariadb/) - A MariaDB 5.5 container, best used with other containers
 
 To run a stack you would run something like;
 
-```
+``` bash
 docker run -d -v /home/containers/database:/var/lib/mysql --name="database" greencape/mariadb
 docker run -d -v /home/containers/web:/var/www/html --name="php" --link database:db greencape/php-fpm
 docker run -d -p 80 -v /home/containers/web:/var/www/html -e VIRTUAL_HOST=some.domain.com --link php:php-fpm --name="nginx" greencape/nginx

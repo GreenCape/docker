@@ -1,16 +1,16 @@
 #!/bin/bash
 set -e
 
+echo "Configuring PHP-FPM"
 sed -i 's/memory_limit = .*/memory_limit = 768M/' /etc/php.ini
 sed -i 's/post_max_size = .*/post_max_size = 50M/' /etc/php.ini
 echo 'date.timezone = "Europe/London"' >> /etc/php.ini
 
-echo "Configuring Nginx using default Nginx configuration"
 if [[ $PHP_POOL != "" ]]; then
-    echo "Using custom pool name [$PHP_POOL]"
+    echo "Using custom FPM pool [$PHP_POOL]"
     sed -i '/[www]/c\['$PHP_POOL']' /etc/php-fpm.d/www.conf
 else
-    echo "Using default pool name [www]"
+    echo "Using default FPM pool [www]"
 fi
 
 echo "Setting user and group (webserver:webserver)"
