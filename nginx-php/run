@@ -25,5 +25,8 @@ if [[ $RUN_COMPOSER != "" ]]; then
     su -s /bin/sh webserver -c "cd /var/www/html/ && composer install"
 fi
 
+echo "Setting postfix to use $MAIL_PORT_25_TCP_ADDR as a relay"
+postconf -e "relayhost = $MAIL_PORT_25_TCP_ADDR"
+
 echo "Starting services"
 exec supervisord -n

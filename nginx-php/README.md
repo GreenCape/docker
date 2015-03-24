@@ -8,42 +8,6 @@ A Docker build which runs a CentOS 7 container with Nginx and PHP 5.4.
 
 The most current version of Nginx from the Nginx repository is used.
 
-The `default.conf` file for Nginx is
- 
-    server {
-        listen       80 default_server;
-        server_name  _;
-    
-        root   /var/www/html;
-    
-        access_log  /var/log/nginx/access.log  main;
-        error_log  /var/log/nginx/error.log;
-    
-        location / {
-            index  index.html index.htm index.php;
-        }
-    
-        error_page  404              /404.html;
-        location = /404.html {
-            root   /usr/share/nginx/html;
-        }
-    
-        error_page   500 502 503 504  /50x.html;
-        location = /50x.html {
-            root   /usr/share/nginx/html;
-        }
-    
-        location ~ \.php$ {
-            fastcgi_pass   localhost:9000;
-            fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
-            include        fastcgi_params;
-        }
-    
-        location ~ /\.ht {
-            deny  all;
-        }
-    }
-
 ### PHP
 
 The most current version of PHP from the Centos repository is used.
@@ -86,11 +50,15 @@ The pool name to use (without brackets), the default is `[www]`
 
 **`RUN_COMPOSER`**
 
-If not empty, composer install will be run as the `webserver` user in `/var/www/html/`
+If not empty, `composer install` will be run as the `webserver` user in `/var/www/html/`
 
 **`VIRTUAL_HOST`**
 
 The domain name for the container, e.g. `www.customer.dev`
+
+**`MAIL_PORT_25_TCP_ADDR`**
+
+Relay host for postfix
 
 ## Examples
 

@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+echo "Configuring Nginx using default Nginx configuration"
+
+if [[ $RUN_COMPOSER != "" ]]; then
+    echo "Running composer install"
+    su -s /bin/sh webserver -c "cd /var/www/html/ && composer install"
+fi
+
+echo "Setting postfix to use $MAIL_PORT_25_TCP_ADDR as a relay"
+postconf -e "relayhost = $MAIL_PORT_25_TCP_ADDR"
+
+echo "Starting services"
+exec supervisord -n

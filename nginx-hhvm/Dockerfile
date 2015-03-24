@@ -2,10 +2,9 @@ FROM greencape/base:latest
 MAINTAINER Niels Braczek <nbraczek@bsds.de>
 
 ADD nginx.repo /etc/yum.repos.d/
+ADD hhvm.repo /etc/yum.repos.d/
 RUN yum -y install yum-plugin-replace
-RUN yum -y install nginx mariadb php56u php56u-common php56u-fpm php56u-process php56u-pecl-jsonc php56u-cli php56u-mysqlnd php56u-pdo php56u-devel php56u-gd php56u-pspell php56u-snmp php56u-xmlrpc php56u-xml php56u-pear php56u-mcrypt php56u-mbstring php56u-opcache python-setuptools postfix gcc make && yum clean all
-RUN pecl install channel://pecl.php.net/xhprof-0.9.4 && pecl install xdebug
-RUN echo "extension=xhprof.so" >> /etc/php.d/xhprof.ini && echo "zend_extension=/usr/lib64/php/modules/xdebug.so" >> /etc/php.d/xdebug.ini
+RUN yum -y install nginx mariadb hhvm python-setuptools postfix gcc make && yum clean all
 RUN easy_install pip && pip install "pip>=1.4,<1.5" --upgrade && pip install supervisor
 RUN groupadd apache && useradd webserver -u 666 && gpasswd -a webserver apache && mkdir -p /var/www/html/ && chown -R webserver:webserver /var/www/html/
 ADD index.php /var/www/html/
