@@ -1,9 +1,34 @@
 FROM greencape/base:latest
 MAINTAINER Niels Braczek <nbraczek@bsds.de>
 
-RUN rpm -Uvh https://mirror.webtatic.com/yum/el7/epel-release.rpm && rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm &&
-yum -y install php54w php54w-fpm php54w-cli php54w-devel php54w-common php54w-dba php54w-gd php54w-mbstring php54w-mcrypt php54w-mysql php54w-pdo php54w-pspell php54w-snmp php54w-xdebug php54w-xml php54w-xmlrpc php54w-pecl-memcache &&
-yum clean all
+ENV PHP_VERSION php56u
+
+RUN yum -y install \
+    $PHP_VERSION \
+    $PHP_VERSION-common \
+    $PHP_VERSION-fpm \
+    $PHP_VERSION-process \
+    $PHP_VERSION-pecl-jsonc \
+    $PHP_VERSION-cli \
+    $PHP_VERSION-mysqlnd \
+    $PHP_VERSION-pdo \
+    $PHP_VERSION-devel \
+    $PHP_VERSION-gd \
+    $PHP_VERSION-pspell \
+    $PHP_VERSION-snmp \
+    $PHP_VERSION-xmlrpc \
+    $PHP_VERSION-xml \
+    $PHP_VERSION-pear \
+    $PHP_VERSION-mcrypt \
+    $PHP_VERSION-mbstring \
+    $PHP_VERSION-opcache \
+    $PHP_VERSION-dba \
+    $PHP_VERSION-xdebug \
+    python-setuptools \
+    postfix \
+    gcc \
+    make \
+  && yum clean all
 ADD run /usr/local/bin/
 RUN chmod +x /usr/local/bin/run
 CMD ["/usr/local/bin/run"]

@@ -1,6 +1,6 @@
 # Nginx & PHP
 
-A Docker build which runs a CentOS 7 container with Nginx and PHP 5.4.
+A Docker build which runs a CentOS 7 container with Nginx and PHP 5.6.
 
 ## Configuration
 

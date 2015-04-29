@@ -1,6 +1,6 @@
 # PHP-FPM
 
-A Docker build which runs a CentOS 7 container with PHP 5.4 using PHP-FPM.
+A Docker build which runs a CentOS 7 container with PHP 5.6 using PHP-FPM.
 
 ## Environment Variables
 
