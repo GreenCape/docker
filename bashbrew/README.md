@@ -1,6 +1,6 @@
 # Supported tags and respective `Dockerfile` links
 
--	[`latest` (*Dockerfile*)](https://github.com/GreenCape/docker/blob/master/jekyll/Dockerfile)
+-	[`latest` (*Dockerfile*)](https://github.com/GreenCape/docker/blob/master/bashbrew/Dockerfile)
 
 # What is Bashbrew?
 
