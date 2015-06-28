@@ -8,7 +8,7 @@ Jekyll is a simple, blog-aware, static site generator. It takes a template direc
 
 > [jekyllrb.com/docs/home/](http://jekyllrb.com/docs/home/)
 
-![logo](https://github.com/GreenCape/docker/blob/master/jekyll/docs/logo.png)
+![logo](https://raw.githubusercontent.com/GreenCape/docker/master/jekyll/docs/logo.png)
 
 # How to use this image
 
