@@ -1,0 +1,17 @@
+{
+  "name": "greencape/docker",
+  "description": "A collection of Docker image definitions, mostly used in GreenCape/build.",
+  "license": "MIT",
+  "homepage": "https://github.com/GreenCape/docker",
+  "authors": [
+    {
+      "name": "Niels Braczek",
+      "email": "nbraczek@bsds.de",
+      "role": "lead"
+    }
+  ],
+  "require-dev": {
+    "stage1/docker-php": "^0.4.1",
+    "phpunit/phpunit": "~4"
+  }
+}
