@@ -11,10 +11,10 @@ versions=( "${versions[@]%/}" )
 
 
 for version in "${versions[@]}"; do
-	fullVersion="$(curl -sSL "http://ftp.osuosl.org/pub/mariadb/repo/$version/debian/dists/wheezy/main/binary-amd64/Packages" | grep -m1 -A10 "^Package: mariadb-server\$" | grep -m1 '^Version: ' | cut -d' ' -f2)"
+	fullVersion="$(curl -sSL "http://ftp.osuosl.org/pub/mariadb/repo/$version/ubuntu/dists/trusty/main/binary-amd64/Packages" | iconv -f utf-8 | grep -m1 -A10 "^Package: mariadb-server\$" | grep -m1 '^Version: ' | cut -d' ' -f2)"
 	(
 		set -x
-		cp docker-entrypoint.sh Dockerfile.template "$version/"
+		cp init.sh run.sh Dockerfile.template "$version/"
 		mv "$version/Dockerfile.template" "$version/Dockerfile"
 		sed -i 's/%%MARIADB_MAJOR%%/'$version'/g; s/%%MARIADB_VERSION%%/'$fullVersion'/g' "$version/Dockerfile"
 	)
