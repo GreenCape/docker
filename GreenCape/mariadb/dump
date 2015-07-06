@@ -1,9 +1,0 @@
-#!/bin/bash
-set -e
-
-MYSQL_DATABASE=${MYSQL_DATABASE:-""}
-
-NOW=$(date +"%m-%d-%Y-%H%M%S")
-BACKUPFILE="/backup/$MYSQL_DATABASE-$NOW.sql"
-
-mysqldump $MYSQL_DATABASE > $BACKUPFILE
