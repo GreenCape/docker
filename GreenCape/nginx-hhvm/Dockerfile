@@ -26,7 +26,7 @@ RUN useradd webserver -u 666 \
  && mkdir -p /var/www/html/ \
  && chown -R webserver:webserver /var/www/html/
 
-ADD index.php /var/www/html/
+ADD index.php.dist /var/www/html/index.php
 ADD supervisord.conf /etc/supervisord.conf
 ADD nginx.conf /etc/nginx/nginx.conf
 ADD default.conf /etc/nginx/conf.d/default.conf
