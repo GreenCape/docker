@@ -1,4 +1,4 @@
-FROM phusion/baseimage:0.9.16
+FROM greencape/base
 MAINTAINER Niels Braczek <nbraczek@bsds.de>
 
 # Add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
