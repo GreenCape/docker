@@ -2,70 +2,122 @@
 
 namespace GreenCape\DockerTest;
 
-use Docker\Container;
-use Docker\Docker;
-use Docker\Exception\UnexpectedStatusCodeException;
-
 class DockerContainer
 {
-	/** @var Docker  */
-	private $docker;
+	/** @var \PHPUnit_Framework_TestCase  */
+	private $testCase;
 
-	/** @var Container  */
-	private $container;
+	/** @var DockerImage  */
+	private $image;
+
+	/** @var string  */
+	private $name;
+
+	/** @var string */
+	private $id = null;
+
+	use ShellAdapter;
 
 	/**
-	 * @param DockerImage $image
-	 *
-	 * @throws UnexpectedStatusCodeException
-	 *
+	 * @param \PHPUnit_Framework_TestCase $testCase
+	 * @param DockerImage                 $image
+	 * @param null                        $name
 	 */
-	public function __construct(DockerImage $image)
+	public function __construct(\PHPUnit_Framework_TestCase $testCase, DockerImage $image, $name = null)
 	{
-		$this->docker = new Docker();
+		$this->testCase = $testCase;
 
-		$this->container = new Container(['Image' => (string) $image]);
-		$this->docker->getContainerManager()->create($this->container);
+		if (empty($name))
+		{
+			$name = preg_replace('~\W+~', '_', (string) $image);
+		}
+		$this->name = $name;
+		$this->image = $image;
 	}
 
-	public function __destruct()
+	public function create()
 	{
-		$this->docker->getContainerManager()->remove($this->container);
+		$response = $this->shell("docker create --name=" . $this->name . " " . (string)$this->image);
+		$this->id = $response['result'];
+
+		return $this;
+	}
+
+	public function remove()
+	{
+		$this->guardContainerIsRunning();
+		$this->shell("docker rm --force " . $this->id);
+
+		return $this;
 	}
 
 	public function start()
 	{
-		$this->docker->getContainerManager()->start($this->container);
-	}
+		$this->guardContainerIsRunning();
+		$this->shell("docker start " . $this->id);
 
-	public function exec($commands)
-	{
-		if (is_string($commands))
-		{
-			$commands = explode(';', $commands);
-		}
-
-		$containerManager = $this->docker->getContainerManager();
-
-		$contents = '';
-
-		foreach ($commands as $command)
-		{
-			$commandId = $containerManager->exec($this->container, explode(' ', trim($command)));
-			$response  = $containerManager->execstart($commandId);
-			$contents .= $response->getBody()->getContents();
-		}
-
-		return $contents;
-	}
-
-	public function restart()
-	{
-		$this->docker->getContainerManager()->restart($this->container);
+		return $this;
 	}
 
 	public function stop()
 	{
-		$this->docker->getContainerManager()->stop($this->container);
+		$this->guardContainerIsRunning();
+		$this->shell("docker stop " . $this->id);
+
+		return $this;
+	}
+
+	public function exec($command)
+	{
+		$this->guardContainerIsRunning();
+
+		return $this->shell("docker exec " . $this->id. " /bin/bash -c \"" . $command . "\"");
+	}
+
+	public function run($command, array $env = array())
+	{
+		$environment = $this->buildEnvOptions($env);
+
+		return $this->shell("docker run --rm " . $environment . $this->image . " /bin/bash -c \"" . $command . "\"");
+	}
+
+	public function getServices()
+	{
+		$command = 'ls /etc/service';
+
+		if (empty($this->id))
+		{
+			$response = $this->run($command);
+		}
+		else
+		{
+			$response = $this->exec($command);
+		}
+
+		return $response['output'];
+	}
+
+	private function guardContainerIsRunning()
+	{
+		if (empty($this->id))
+		{
+			$this->testCase->fail("Container $this->name ($this->image) is not running.");
+		}
+	}
+
+	/**
+	 * @param array $env
+	 *
+	 * @return string
+	 */
+	private function buildEnvOptions(array $env)
+	{
+		$environment = '';
+		foreach ($env as $key => $value)
+		{
+			$environment .= "-e $key=" . escapeshellarg($value) . " ";
+		}
+
+		return $environment;
 	}
 }

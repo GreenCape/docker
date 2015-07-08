@@ -2,13 +2,8 @@
 
 namespace GreenCape\DockerTest;
 
-use Docker\Docker;
-
 class BaseTest extends \PHPUnit_Framework_TestCase
 {
-	/** @var string */
-	private $imageName = 'test/base';
-
 	/** @var  DockerContainer */
 	private $container;
 
@@ -16,16 +11,17 @@ class BaseTest extends \PHPUnit_Framework_TestCase
 	private $image;
 
 	/**
-	 * Constructs a test case with the given name.
-	 *
-	 * @param string $name
-	 * @param array  $data
-	 * @param string $dataName
+	 * This method is called before the first test of this test class is run.
 	 */
-	public function __construct($name = null, array $data = array(), $dataName = '')
+	public static function setUpBeforeClass()
 	{
-		parent::__construct($name, $data, $dataName);
-		$this->image = new DockerImage(str_replace('/tests/', '/', __DIR__), $this->imageName);
+		$repoPath = str_replace('/tests/', '/', __DIR__);
+		$image = new DockerImage(new self, $repoPath, 'test/image');
+		if ($image->exists())
+		{
+			$image->remove();
+		}
+		$image->build();
 	}
 
 	/**
@@ -34,8 +30,9 @@ class BaseTest extends \PHPUnit_Framework_TestCase
 	 */
 	protected function setUp()
 	{
-		$this->container = new DockerContainer($this->image);
-		$this->container->start();
+		$repoPath = str_replace('/tests/', '/', __DIR__);
+		$this->image = new DockerImage($this, $repoPath, 'test/image');
+		$this->container = new DockerContainer($this, $this->image);
 	}
 
 	/**
@@ -44,7 +41,19 @@ class BaseTest extends \PHPUnit_Framework_TestCase
 	 */
 	protected function tearDown()
 	{
-		$this->container->stop();
+	}
+
+	/**
+	 * This method is called after the last test of this test class is run.
+	 */
+	public static function tearDownAfterClass()
+	{
+		$repoPath = str_replace('/tests/', '/', __DIR__);
+		$image    = new DockerImage(new self, $repoPath, 'test/image');
+		if ($image->exists())
+		{
+			$image->remove();
+		}
 	}
 
 	/**
@@ -52,12 +61,27 @@ class BaseTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testImageIsBasedOnPhusionBaseimage()
 	{
-		$history = $this->image->history();
-		$this->assertRegExp('~^phusion/baseimage:.*$~', $history[1]['Tags'][0]);
+		$this->assertRegExp('~Phusion~', implode("\n", $this->image->history()));
 	}
 
 	public function testNanoEditorIsInstalled()
 	{
-		$this->assertContains('GNU nano version 2', $this->container->exec('nano --version'));
+		$this->assertContains('GNU nano version 2', $this->container->run('nano --version'));
+	}
+
+	/**
+	 * @testdox Cron daemon is installed
+	 */
+	public function testCron()
+	{
+		$this->assertContains('cron', $this->container->getServices());
+	}
+
+	/**
+	 * @testdox SSH daemon is installed
+	 */
+	public function testSsh()
+	{
+		$this->assertContains('sshd', $this->container->getServices());
 	}
 }

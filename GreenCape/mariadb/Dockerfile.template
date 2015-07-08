@@ -1,9 +1,12 @@
-FROM greencape/base
+FROM phusion/baseimage:0.9.16
 MAINTAINER Niels Braczek <nbraczek@bsds.de>
 
 # Add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql \
  && useradd -r -g mysql mysql
+
+# Use baseimage-docker's init system.
+CMD ["/sbin/my_init"]
 
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 199369E5404BD5FC7D2FE43BCBCB082A1BB943DB
 
@@ -26,15 +29,15 @@ RUN apt-get update \
 VOLUME /var/lib/mysql
 
 RUN mkdir -p /etc/my_init.d
-ADD init.sh /etc/my_init.d/01_mysql.sh
+ADD init.sh /etc/my_init.d/01_mysqld.sh
 
-RUN mkdir /etc/service/mysql
-ADD run.sh /etc/service/mysql/run
+RUN mkdir /etc/service/mysqld
+ADD run.sh /etc/service/mysqld/run
+
+ADD wait.sh /sbin/wait-for-mysqld
 
 # Clean up APT when done.
-RUN apt-get clean
+RUN apt-get clean \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 EXPOSE 3306
-# Use baseimage-docker's init system.
-CMD ["/sbin/my_init"]

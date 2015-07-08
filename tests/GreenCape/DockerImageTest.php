@@ -2,9 +2,6 @@
 
 namespace GreenCape\DockerTest;
 
-use Docker\Docker;
-use Docker\Exception\ImageNotFoundException;
-
 class DockerImageTest extends \PHPUnit_Framework_TestCase
 {
 	protected $repository = 'test/image';
@@ -25,43 +22,19 @@ class DockerImageTest extends \PHPUnit_Framework_TestCase
 	{
 	}
 
-	public function testImageIsCreatedByConstructorAndRemovedByDestructor()
+	public function testImageCanBeBuiltAndRemoved()
 	{
-		$docker = new Docker();
-		$imageManager = $docker->getImageManager();
+		$image = new DockerImage($this, getcwd() . '/GreenCape/base', $this->repository);
 
-		try
-		{
-			$image = $imageManager->find($this->repository);
-			$this->fail("There should not be a '$this->repository' image. Remove '$image' and retry!");
-		}
-		catch (ImageNotFoundException $e)
-		{
-			$this->addToAssertionCount(1);
-		}
+		$this->assertFalse($image->exists(), "Image $this->repository already exists. Remove it and try again!");
 
-		$image = new DockerImage(str_replace('/tests/', '/', __DIR__) . '/base', $this->repository);
+		$image->build();
 
-		try
-		{
-			$imageManager->find($this->repository);
-			$this->addToAssertionCount(1);
-		}
-		catch (ImageNotFoundException $e)
-		{
-			$this->fail("Image '$this->repository' was not created");
-		}
+		$this->assertTrue($image->exists(), "Image $this->repository could not be built");
 
-		unset($image);
+		$image->remove();
 
-		try
-		{
-			$image = $imageManager->find($this->repository);
-			$this->fail("The '$image' image was not removed");
-		} catch (ImageNotFoundException $e)
-		{
-			$this->addToAssertionCount(1);
-		}
+		$this->assertFalse($image->exists(), "Image $this->repository could not be removed");
 	}
 
 	/**
@@ -69,7 +42,7 @@ class DockerImageTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testStringRepresentationIsRepositoryColonTag()
 	{
-		$image = new DockerImage(str_replace('/tests/', '/', __DIR__) . '/base', $this->repository);
+		$image = new DockerImage($this, null, $this->repository);
 
 		$this->assertEquals($this->repository . ':latest', (string) $image);
 	}

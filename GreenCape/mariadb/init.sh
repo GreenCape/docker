@@ -1,8 +1,9 @@
 #!/bin/bash
 set -e
 
-# read DATADIR from the MySQL config
-DATADIR="$("$@" --verbose --help 2>/dev/null | awk '$1 == "datadir" { print $2; exit }')"
+# Read DATADIR from the MySQL config
+DATADIR="$(mysqld --verbose --help 2>/dev/null | awk '$1 == "datadir" { print $2; exit }')"
+DATADIR=${DATADIR:-"/var/lib/mysql"}
 
 if [ ! -d "$DATADIR/mysql" ]; then
     if [ -z "$MYSQL_ROOT_PASSWORD" -a -z "$MYSQL_ALLOW_EMPTY_PASSWORD" ]; then
@@ -17,8 +18,6 @@ if [ ! -d "$DATADIR/mysql" ]; then
 
     # These statements _must_ be on individual lines, and _must_ end with
     # semicolons (no line breaks or comments are permitted).
-    # TODO proper SQL escaping on ALL the things D:
-
     tempSqlFile='/tmp/mysql-first-time.sql'
     cat > "$tempSqlFile" <<-EOSQL
 		DELETE FROM mysql.user ;
@@ -41,7 +40,7 @@ if [ ! -d "$DATADIR/mysql" ]; then
 
     echo 'FLUSH PRIVILEGES ;' >> "$tempSqlFile"
 
-    set -- "$@" --init-file="$tempSqlFile"
+    set -- mysqld --init-file="$tempSqlFile"
 fi
 
 chown -R mysql:mysql "$DATADIR"
