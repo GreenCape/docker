@@ -19,14 +19,11 @@ trait MariaDbCommonTests
 	public static function setUpBeforeClass()
 	{
 		$repoPath = str_replace('/tests/', '/', __DIR__) . '/' . self::$version;
-		echo "\nTesting $repoPath\n";
 		$image    = new DockerImage(new self, $repoPath, 'test/image');
 		if ($image->exists())
 		{
-			echo " - removing leftover image\n";
 			$image->remove();
 		}
-		echo " - building image\n";
 		$image->build();
 	}
 
@@ -87,11 +84,11 @@ trait MariaDbCommonTests
 	public function testMysqlDaemonGetsStarted()
 	{
 		$response = $this->container->run(
-			'/sbin/my_init -- /sbin/wait-for-mysqld; sv status mysqld 2>/dev/null',
+			'/sbin/my_init -- /sbin/wait-for-mysqld 2>/dev/null',
 			array(
 				'MYSQL_ALLOW_EMPTY_PASSWORD' => true
 			)
 		);
-		$this->assertEquals(0, $response['return']);
+		$this->assertContains('run: mysqld:', $response['result']);
 	}
 }
