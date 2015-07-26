@@ -12,6 +12,10 @@ versions=( "${versions[@]%/}" )
 
 for version in "${versions[@]}"; do
 	fullVersion="$(curl -sSL "http://ftp.osuosl.org/pub/mariadb/repo/$version/ubuntu/dists/trusty/main/binary-amd64/Packages" | iconv -f utf-8 | grep -m1 -A10 "^Package: mariadb-server\$" | grep -m1 '^Version: ' | cut -d' ' -f2)"
+	if [ -z "$fullVersion" ]; then
+		echo >&2 "warning: cannot find $version"
+		continue
+	fi
 	(
 		set -x
 		rm "$version"/*

@@ -5,26 +5,28 @@ MAINTAINER Niels Braczek <nbraczek@bsds.de>
 RUN groupadd -r mysql \
  && useradd -r -g mysql mysql
 
-# Use baseimage-docker's init system.
-CMD ["/sbin/my_init"]
-
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 199369E5404BD5FC7D2FE43BCBCB082A1BB943DB
 
 ENV MARIADB_MAJOR 10.1
 ENV MARIADB_VERSION 10.1.5+maria-1~trusty
 
 RUN echo "deb http://ftp.osuosl.org/pub/mariadb/repo/$MARIADB_MAJOR/ubuntu trusty main" > /etc/apt/sources.list.d/mariadb.list \
- && { \
-        echo 'Package: *'; \
-        echo 'Pin: release o=MariaDB'; \
-        echo 'Pin-Priority: 999'; \
-    } > /etc/apt/preferences.d/mariadb
+	&& { \
+		echo 'Package: *'; \
+		echo 'Pin: release o=MariaDB'; \
+		echo 'Pin-Priority: 999'; \
+	} > /etc/apt/preferences.d/mariadb
 
-RUN apt-get update \
- && apt-get install -y mariadb-server=$MARIADB_VERSION \
- && rm -rf /var/lib/mysql \
- && mkdir /var/lib/mysql \
- && sed -ri 's/^(bind-address|skip-networking)/;\1/' /etc/mysql/my.cnf
+RUN { \
+		echo mariadb-server-$MARIADB_MAJOR mysql-server/root_password password 'unused'; \
+		echo mariadb-server-$MARIADB_MAJOR mysql-server/root_password_again password 'unused'; \
+	} | debconf-set-selections \
+	&& apt-get update \
+	&& apt-get install -y \
+		mariadb-server=$MARIADB_VERSION \
+	&& rm -rf /var/lib/mysql \
+	&& mkdir /var/lib/mysql \
+	&& sed -ri 's/^(bind-address|skip-networking)/;\1/' /etc/mysql/my.cnf
 
 VOLUME /var/lib/mysql
 
@@ -41,3 +43,4 @@ RUN apt-get clean \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 EXPOSE 3306
+CMD ["/sbin/my_init"]
