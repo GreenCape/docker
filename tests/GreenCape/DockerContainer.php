@@ -45,54 +45,44 @@ class DockerContainer
 
 	public function remove()
 	{
-		$this->guardContainerIsRunning();
-		$this->shell("docker rm --force " . $this->id);
+		$this->shell("docker rm --force " . $this->name);
 
 		return $this;
 	}
 
 	public function start()
 	{
-		$this->guardContainerIsRunning();
-		$this->shell("docker start " . $this->id);
+		$this->shell("docker start " . $this->name);
 
 		return $this;
 	}
 
 	public function stop()
 	{
-		$this->guardContainerIsRunning();
-		$this->shell("docker stop " . $this->id);
+		$this->shell("docker stop " . $this->name);
 
 		return $this;
 	}
 
 	public function exec($command)
 	{
-		$this->guardContainerIsRunning();
+		$response = $this->shell("docker exec " . $this->name . " /bin/bash -c \"" . $command . "\"");
 
-		return $this->shell("docker exec " . $this->id. " /bin/bash -c \"" . $command . "\"");
+		return $response;
 	}
 
 	public function run($command, array $env = array())
 	{
 		$environment = $this->buildEnvOptions($env);
+		$response = $this->shell("docker run --rm " . $environment . $this->image . " /bin/bash -c \"" . $command . "\"");
 
-		return $this->shell("docker run --rm " . $environment . $this->image . " /bin/bash -c \"" . $command . "\"");
+		return $response;
 	}
 
 	public function getServices()
 	{
 		$command = 'ls /etc/service';
-
-		if (empty($this->id))
-		{
-			$response = $this->run($command);
-		}
-		else
-		{
-			$response = $this->exec($command);
-		}
+		$response = empty($this->id) ? $this->run($command) : $this->exec($command);
 
 		return $response['output'];
 	}

@@ -2,9 +2,7 @@
 
 namespace GreenCape\DockerTest;
 
-class Mariadb_10_0Test extends \PHPUnit_Framework_TestCase
+class Mariadb_10_0Test extends Mariadb_5_5Test
 {
-	protected static $version = '10.0';
-
-	use MariaDbCommonTests;
+	protected static $version = "10.0";
 }
