@@ -1,31 +1,37 @@
 # Docker
 
-A repo to house my trusted Docker builds, see my [Docker Index Profile](https://index.docker.io/u/greencape/) for more information.
+This repo contains GreenCape's trusted Docker builds, see my [Docker Index Profile](https://index.docker.io/u/greencape/) for more information.
 
-These builds are built on the work of [Russ McKendrick](https://hub.docker.com/u/russmckendrick/), but will undergo a
-series of changes and additions to make it more suitable for Joomla! development. 
+These images are designed for use with automated tests, so simplicity goes over security.
+It is not recommended to use them in production environment.
 
-To connect to these containers use `nsenter` / `docker-enter`, see [this blog post](https://media-glass.es/2014/08/25/connecting-to-docker-containers/) for details.
+# MIT License
 
-## General Containers
+Copyright (c) 2015 BSDS Braczek Software- und DatenSysteme
 
-- [Base](https://registry.hub.docker.com/u/greencape/base/) - Base build for use with other Docker builds
-- [Nginx Proxy](https://registry.hub.docker.com/u/greencape/nginx-proxy/) - A reverse proxy container
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-## CentOS 7 LEMP Stack
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-- [Nginx](https://registry.hub.docker.com/u/greencape/nginx/) - Nginx webserver for use with a [PHP-FPM container](https://registry.hub.docker.com/u/greencape/php-fpm/)
-- [PHP 5.4 / PHP-FPM](https://registry.hub.docker.com/u/greencape/php-fpm/)- PHP 5.4 service using PHP-FPM for use with a [Nginx Container](https://registry.hub.docker.com/u/greencape/nginx/)
-- [Nginx / PHP 5.4](https://registry.hub.docker.com/u/greencape/nginx-php/) - An all in-one Nginx / PHP container
-- [Nginx / HHVM](https://registry.hub.docker.com/u/greencape/nginx-hhvm/) - An all in-one Nginx / HHVM container
-- [MariaDB 10](https://registry.hub.docker.com/u/greencape/mariadb/) - A MariaDB 5.5 container, best used with other containers
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-To run a stack you would run something like;
+# User Feedback
 
-``` bash
-docker run -d -v /home/containers/database:/var/lib/mysql --name="database" greencape/mariadb
-docker run -d -v /home/containers/web:/var/www/html --name="php" --link database:db greencape/php-fpm
-docker run -d -p 80 -v /home/containers/web:/var/www/html -e VIRTUAL_HOST=some.domain.com --link php:php-fpm --name="nginx" greencape/nginx
-```
+## Documentation
 
-Have a look at [this terminal session](https://asciinema.org/a/11731) for a demo or have a read of this [blog post](https://media-glass.es/2014/08/31/docker-fig-reverse-proxy-centos7/) for a more detailed overview.
+Each package is located in its own directory below `GreenCape`, and has its own `README.md` file.   
+
+## Issues
+
+If you have any problems with or questions about the images,
+please contact us through a [GitHub issue](https://github.com/GreenCape/docker/issues).
+
+## Contributing
+
+You are invited to contribute new features, fixes, or updates, large or small;
+we are always thrilled to receive pull requests, and do our best to process them as fast as we can.
+
+Before you start to code, we recommend discussing your plans through a [GitHub issue](https://github.com/GreenCape/docker/issues),
+especially for more ambitious contributions.
+This gives other contributors a chance to point you in the right direction, give you feedback on your design,
+and help you find out if someone else is working on the same thing.
