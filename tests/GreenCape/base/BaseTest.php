@@ -11,28 +11,13 @@ class BaseTest extends \PHPUnit_Framework_TestCase
 	private $image;
 
 	/**
-	 * This method is called before the first test of this test class is run.
-	 */
-	public static function setUpBeforeClass()
-	{
-		$repoPath = str_replace('/tests/', '/', __DIR__);
-		$image = new DockerImage(new self, $repoPath, 'test/image');
-		if ($image->exists())
-		{
-			$image->remove();
-		}
-		$image->build();
-	}
-
-	/**
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
 	protected function setUp()
 	{
-		$repoPath = str_replace('/tests/', '/', __DIR__);
-		$this->image = new DockerImage($this, $repoPath, 'test/image');
-		$this->container = new DockerContainer($this, $this->image);
+		$this->image = new DockerImage(str_replace('/tests/', '/', __DIR__), 'greencape/base:latest');
+		$this->container = new DockerContainer($this->image);
 	}
 
 	/**
@@ -41,27 +26,19 @@ class BaseTest extends \PHPUnit_Framework_TestCase
 	 */
 	protected function tearDown()
 	{
-	}
-
-	/**
-	 * This method is called after the last test of this test class is run.
-	 */
-	public static function tearDownAfterClass()
-	{
-		$repoPath = str_replace('/tests/', '/', __DIR__);
-		$image    = new DockerImage(new self, $repoPath, 'test/image');
-		if ($image->exists())
+		if ($this->container->exists())
 		{
-			$image->remove();
+			$this->container->remove();
 		}
 	}
 
 	/**
-	 * @testdox Image is based on phusion/baseimage
+	 * @testdox Image is based on Ubuntu 14.04 (LTS)
 	 */
-	public function testImageIsBasedOnPhusionBaseimage()
+	public function testImageIsUbuntu()
 	{
-		$this->assertRegExp('~Phusion~', implode("\n", $this->image->history()));
+		$response = $this->container->run('cat /etc/*-release');
+		$this->assertContains('Ubuntu 14.04', implode("\n", $response['output']));
 	}
 
 	public function testNanoEditorIsInstalled()
@@ -74,7 +51,9 @@ class BaseTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testCron()
 	{
-		$this->assertContains('cron', $this->container->getServices());
+		$response = $this->container->run('ls /etc/service');
+
+		$this->assertContains('cron', $response['output']);
 	}
 
 	/**
@@ -82,6 +61,8 @@ class BaseTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testSsh()
 	{
-		$this->assertContains('sshd', $this->container->getServices());
+		$response = $this->container->run('ls /etc/service');
+
+		$this->assertContains('sshd', $response['output']);
 	}
 }
