@@ -3,7 +3,7 @@ set -e
 source /build.d/buildconfig
 set -x
 
-SYSLOG_NG_BUILD_PATH=/build.d/services/syslog-forwarger
+SYSLOG_NG_BUILD_PATH=/build.d/services/syslog-forwarder
 
 ## Install syslog to "docker logs" forwarder.
 mkdir /etc/service/syslog-forwarder
