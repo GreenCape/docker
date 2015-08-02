@@ -1,8 +1,11 @@
 # Supported tags and respective `Dockerfile` links
 
--	[`10.1.6`, `10.1`, `10`, `latest` (*10.1/Dockerfile*)](https://github.com/GreenCape/docker/blob/fbae87dd7b15dfc3915c0034e987f274263ab61f/GreenCape/mariadb/5.5/Dockerfile)
+-	[`10.1.6`, `10.1`, `10`, `latest` (*10.1/Dockerfile*)](https://github.com/GreenCape/docker/blob/fbae87dd7b15dfc3915c0034e987f274263ab61f/GreenCape/mariadb/10.1/Dockerfile)
+	[![ImageLayers.io](https://badge.imagelayers.io/greencape/mariadb:10.1.svg)](https://imagelayers.io/?images=greencape/mariadb:10.1)
 -	[`10.0.20`, `10.0` (*10.0/Dockerfile*)](https://github.com/GreenCape/docker/blob/fbae87dd7b15dfc3915c0034e987f274263ab61f/GreenCape/mariadb/10.0/Dockerfile)
+	[![ImageLayers.io](https://badge.imagelayers.io/greencape/mariadb:10.0.svg)](https://imagelayers.io/?images=greencape/mariadb:10.0)
 -	[`5.5.44`, `5.5`, `5` (*5.5/Dockerfile*)](https://github.com/GreenCape/docker/blob/fbae87dd7b15dfc3915c0034e987f274263ab61f/GreenCape/mariadb/5.5/Dockerfile)
+	[![ImageLayers.io](https://badge.imagelayers.io/greencape/mariadb:5.5.svg)](https://imagelayers.io/?images=greencape/mariadb:5.5)
 
 # What is MariaDB?
 
