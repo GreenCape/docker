@@ -18,10 +18,13 @@ for version in "${versions[@]}"; do
 	fi
 	(
 		set -x
-		rm "$version"/*
-		cp init.sh run.sh wait.sh Dockerfile.template "$version/"
-		chmod +x "$version"/*.sh
+		rm -rf "$version"/*
+		mkdir "$version"/service
+
+		cp run.sh "$version"/service/run
+		cp buildconfig install.sh wait.sh Dockerfile.template "$version/"
 		mv "$version/Dockerfile.template" "$version/Dockerfile"
+
 		sed -i 's/%%MARIADB_MAJOR%%/'$version'/g; s/%%MARIADB_VERSION%%/'$fullVersion'/g' "$version/Dockerfile"
 	)
 done
