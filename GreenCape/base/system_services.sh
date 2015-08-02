@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
-source /bd_build/buildconfig
+source /build.d/buildconfig
 set -x
 
 ## Install init process.
-cp /bd_build/bin/my_init /sbin/
+mv /build.d/bin/my_init /sbin/
 mkdir -p /etc/my_init.d
 mkdir -p /etc/container_environment
 touch /etc/container_environment.sh
@@ -20,11 +20,11 @@ ln -s /etc/container_environment.sh /etc/profile.d/
 $minimal_apt_get_install runit
 
 ## Install a syslog daemon and logrotate.
-[ "$DISABLE_SYSLOG" -eq 0 ] && /bd_build/services/syslog-ng/install.sh || true
-[ "$DISABLE_SYSLOG" -eq 0 ] && /bd_build/services/syslog-forwarder/install.sh || true
+[ "$DISABLE_SYSLOG" -eq 0 ] && /build.d/services/syslog-ng/install.sh || true
+[ "$DISABLE_SYSLOG" -eq 0 ] && /build.d/services/syslog-forwarder/install.sh || true
 
 ## Install the SSH server.
-[ "$DISABLE_SSH" -eq 0 ] && /bd_build/services/sshd/install.sh || true
+[ "$DISABLE_SSH" -eq 0 ] && /build.d/services/sshd/install.sh || true
 
 ## Install cron daemon.
-[ "$DISABLE_CRON" -eq 0 ] && /bd_build/services/cron/install.sh || true
+[ "$DISABLE_CRON" -eq 0 ] && /build.d/services/cron/install.sh || true

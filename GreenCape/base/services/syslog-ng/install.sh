@@ -1,14 +1,14 @@
 #!/bin/bash
 set -e
-source /bd_build/buildconfig
+source /build.d/buildconfig
 set -x
 
-SYSLOG_NG_BUILD_PATH=/bd_build/services/syslog-ng
+SYSLOG_NG_BUILD_PATH=/build.d/services/syslog-ng
 
 ## Install a syslog daemon.
 $minimal_apt_get_install syslog-ng-core
 mkdir /etc/service/syslog-ng
-cp $SYSLOG_NG_BUILD_PATH/service /etc/service/syslog-ng
+cp -a $SYSLOG_NG_BUILD_PATH/service/* /etc/service/syslog-ng/
 mkdir -p /var/lib/syslog-ng
 cp $SYSLOG_NG_BUILD_PATH/syslog_ng_default /etc/default/syslog-ng
 touch /var/log/syslog

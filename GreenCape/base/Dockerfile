@@ -1,11 +1,11 @@
 FROM ubuntu:14.04
-MAINTAINER Phusion <info@phusion.nl>
+MAINTAINER Niels Braczek <nbraczek@bsds.de>
 
-ADD . /bd_build
+ADD . /build.d
 
-RUN /bd_build/prepare.sh && \
-	/bd_build/system_services.sh && \
-	/bd_build/utilities.sh && \
-	/bd_build/cleanup.sh
+RUN /build.d/prepare.sh && \
+	/build.d/system_services.sh && \
+	/build.d/utilities.sh && \
+	/build.d/cleanup.sh
 
 CMD ["/sbin/my_init"]

@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
-source /bd_build/buildconfig
+source /build.d/buildconfig
 set -x
 
 ## Often used tools.
 $minimal_apt_get_install curl less nano psmisc
 
 ## This tool runs a command as another user and sets $HOME.
-cp /bd_build/bin/setuser /sbin/setuser
+mv /build.d/bin/setuser /sbin/setuser

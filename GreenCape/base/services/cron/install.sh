@@ -1,12 +1,12 @@
 #!/bin/bash
 set -e
-source /bd_build/buildconfig
+source /build.d/buildconfig
 set -x
 
 $minimal_apt_get_install cron
 mkdir /etc/service/cron
 chmod 600 /etc/crontab
-cp /bd_build/services/cron/service /etc/service/cron
+cp -a /build.d/services/cron/service/* /etc/service/cron/
 
 ## Remove useless cron entries.
 # Checks for lost+found and scans for mtab.
