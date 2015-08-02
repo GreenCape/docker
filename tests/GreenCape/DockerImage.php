@@ -9,9 +9,6 @@ namespace GreenCape\DockerTest;
  */
 class DockerImage
 {
-	/** @var \PHPUnit_Framework_TestCase */
-	private $testCase;
-
 	/** @var string */
 	private $path;
 
@@ -27,14 +24,16 @@ class DockerImage
 	use ShellAdapter;
 
 	/**
-	 * @param \PHPUnit_Framework_TestCase $testCase
 	 * @param string                      $path
 	 * @param string                      $repository
 	 */
-	public function __construct(\PHPUnit_Framework_TestCase $testCase, $path, $repository)
+	public function __construct($path, $repository)
 	{
-		$this->testCase = $testCase;
-		$this->path       = $path;
+		if (!file_exists("$path/Dockerfile"))
+		{
+			throw new \InvalidArgumentException("$path/Dockerfile does not exist");
+		}
+		$this->path     = $path;
 		$this->setRepository($repository);
 	}
 
@@ -104,9 +103,13 @@ class DockerImage
 	/**
 	 * @return string The image id
 	 */
-	public function build()
+	public function build($log = null)
 	{
-		$response = $this->shell("docker build --force-rm --tag=" . $this->repository . " \"$this->path\"");
+		$response = $this->shell("docker build --force-rm --tag=" . (string)$this . " \"$this->path\"");
+		if (!empty($log))
+		{
+			file_put_contents($log, implode("\n", $response['output']));
+		}
 		$this->id = str_replace('Successfully built ', '', $response['result']);
 
 		return $this->id;
@@ -138,20 +141,19 @@ class DockerImage
 	 */
 	public function exists()
 	{
-		if (empty($this->id))
-		{
-			return false;
-		}
-
 		$response = $this->shell("docker images | grep " . $this->repository);
-		$pattern = '^' . preg_quote($this->repository) . '\s+' . preg_quote($this->tag) . '\s+' . preg_quote($this->id);
+		$pattern  = '^' . preg_quote($this->repository) . '\s+' . preg_quote($this->tag) . '\s+(\w+)';
 		foreach ($response['output'] as $line)
 		{
-			if (preg_match("~$pattern~", $line))
+			if (preg_match("~$pattern~", $line, $match))
 			{
+				$this->id = $match[1];
+
 				return true;
 			}
 		}
+		$this->id = null;
+
 		return false;
 	}
 }

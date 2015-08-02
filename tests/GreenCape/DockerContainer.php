@@ -4,9 +4,6 @@ namespace GreenCape\DockerTest;
 
 class DockerContainer
 {
-	/** @var \PHPUnit_Framework_TestCase  */
-	private $testCase;
-
 	/** @var DockerImage  */
 	private $image;
 
@@ -19,14 +16,11 @@ class DockerContainer
 	use ShellAdapter;
 
 	/**
-	 * @param \PHPUnit_Framework_TestCase $testCase
 	 * @param DockerImage                 $image
 	 * @param null                        $name
 	 */
-	public function __construct(\PHPUnit_Framework_TestCase $testCase, DockerImage $image, $name = null)
+	public function __construct(DockerImage $image, $name = null)
 	{
-		$this->testCase = $testCase;
-
 		if (empty($name))
 		{
 			$name = preg_replace('~\W+~', '_', (string) $image);
@@ -35,12 +29,37 @@ class DockerContainer
 		$this->image = $image;
 	}
 
-	public function create()
+	public function create(array $env = array())
 	{
-		$response = $this->shell("docker create --name=" . $this->name . " " . (string)$this->image);
+		$environment = $this->buildEnvOptions($env);
+		$response = $this->shell("docker create --name=" . $this->name . " " . $environment . (string)$this->image);
 		$this->id = $response['result'];
 
 		return $this;
+	}
+
+	public function runAsDaemon(array $env = array())
+	{
+		$environment = $this->buildEnvOptions($env);
+		$response    = $this->shell("docker run -d --name=" . $this->name . " " . $environment . (string)$this->image);
+		$this->id    = $response['result'];
+
+		return $this;
+	}
+
+	public function run($command, array $env = array())
+	{
+		$environment = $this->buildEnvOptions($env);
+		$response    = $this->shell("docker run --rm " . $environment . $this->image . " /bin/bash -c \"" . $command . "\"");
+
+		return $response;
+	}
+
+	public function exec($command)
+	{
+		$response = $this->shell("docker exec " . $this->name . " " . $command);
+
+		return $response;
 	}
 
 	public function remove()
@@ -64,35 +83,41 @@ class DockerContainer
 		return $this;
 	}
 
-	public function exec($command)
+	public function inspect()
 	{
-		$response = $this->shell("docker exec " . $this->name . " /bin/bash -c \"" . $command . "\"");
+		$response = $this->shell("docker inspect " . $this->name);
+
+		$config = json_decode(implode("\n", $response['output']), true);
+
+		return array_shift($config);
+	}
+
+	public function logs()
+	{
+		$response = $this->shell("docker logs " . $this->name);
 
 		return $response;
 	}
 
-	public function run($command, array $env = array())
+	/**
+	 * @return bool
+	 */
+	public function exists()
 	{
-		$environment = $this->buildEnvOptions($env);
-		$response = $this->shell("docker run --rm " . $environment . $this->image . " /bin/bash -c \"" . $command . "\"");
-
-		return $response;
-	}
-
-	public function getServices()
-	{
-		$command = 'ls /etc/service';
-		$response = empty($this->id) ? $this->run($command) : $this->exec($command);
-
-		return $response['output'];
-	}
-
-	private function guardContainerIsRunning()
-	{
-		if (empty($this->id))
+		$response = $this->shell("docker ps -a | grep " . $this->name);
+		$pattern  = '^(\w+)\s+' . preg_quote($this->image);
+		foreach ($response['output'] as $line)
 		{
-			$this->testCase->fail("Container $this->name ($this->image) is not running.");
+			if (preg_match("~$pattern~", $line, $match))
+			{
+				$this->id = $match[1];
+
+				return true;
+			}
 		}
+		$this->id = null;
+
+		return false;
 	}
 
 	/**
