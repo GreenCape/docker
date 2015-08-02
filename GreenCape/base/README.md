@@ -1,7 +1,7 @@
 # Supported tags and respective `Dockerfile` links
 
--	[`latest` (*Dockerfile*)](https://github.com/GreenCape/docker/blob/master/base/Dockerfile)
-    [![ImageLayers.io](https://badge.imagelayers.io/greencape/base:latest.svg)](https://imagelayers.io/?images=greencape/base:latest)
+-	[`latest` (*Dockerfile*)](https://github.com/GreenCape/docker/blob/master/base/Dockerfile)  
+    Ubuntu 14.04 [![ImageLayers.io](https://badge.imagelayers.io/greencape/base:latest.svg)](https://imagelayers.io/?images=greencape/base:latest)
 
 # What is Base?
 
