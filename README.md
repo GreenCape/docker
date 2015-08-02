@@ -1,5 +1,8 @@
 # Docker
 
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/e198fda6-1a1e-40d2-be33-c8d9c027f1c9/mini.png)](https://insight.sensiolabs.com/projects/e198fda6-1a1e-40d2-be33-c8d9c027f1c9)
+[![Code Climate](https://codeclimate.com/github/GreenCape/docker/badges/gpa.svg)](https://codeclimate.com/github/GreenCape/docker)
+
 This repo contains GreenCape's trusted Docker builds, see my [Docker Index Profile](https://index.docker.io/u/greencape/) for more information.
 
 These images are designed for use with automated tests, so simplicity goes over security.
