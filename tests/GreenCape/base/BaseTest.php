@@ -21,18 +21,6 @@ class BaseTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 */
-	protected function tearDown()
-	{
-		if ($this->container->exists())
-		{
-			$this->container->remove();
-		}
-	}
-
-	/**
 	 * @testdox Image is based on Ubuntu 14.04 (LTS)
 	 */
 	public function testImageIsUbuntu()
@@ -43,26 +31,68 @@ class BaseTest extends \PHPUnit_Framework_TestCase
 
 	public function testNanoEditorIsInstalled()
 	{
-		$this->assertContains('GNU nano version 2', $this->container->run('nano --version'));
+		$this->container->setVerbose(true);
+		$response = $this->container->run('nano --version');
+		$this->assertContains('GNU nano version 2', implode("\n", $response['output']));
 	}
 
 	/**
-	 * @testdox Cron daemon is installed
+	 * @testdox Cron daemon is started
 	 */
 	public function testCron()
 	{
-		$response = $this->container->run('ls /etc/service');
+		$this->container->setVerbose(true);
+		$this->container->runAsDaemon();
+		$this->container->exec('wait-for cron');
+		$response = $this->container->exec('sv status cron');
 
-		$this->assertContains('cron', $response['output']);
+		$this->assertContains('run: cron', $response['result']);
 	}
 
 	/**
-	 * @testdox SSH daemon is installed
+	 * @testdox SSH daemon can be started
 	 */
 	public function testSsh()
 	{
-		$response = $this->container->run('ls /etc/service');
+		$this->container->setVerbose(true);
+		$this->container->exec('sv up sshd');
+		$this->container->exec('wait-for sshd');
+		$response = $this->container->exec('sv status sshd');
 
-		$this->assertContains('sshd', $response['output']);
+		$this->assertContains('run: sshd', $response['result']);
+	}
+
+	/**
+	 * @testdox Syslog daemon is started
+	 */
+	public function testSyslog()
+	{
+		$this->container->setVerbose(true);
+		$this->container->exec('wait-for syslog-ng');
+		$response = $this->container->exec('sv status syslog-ng');
+
+		$this->assertContains('run: syslog-ng', $response['result']);
+	}
+
+	/**
+	 * @testdox Syslog forwarder is started
+	 */
+	public function testSyslogForwarder()
+	{
+		$this->container->setVerbose(true);
+		$this->container->exec('wait-for syslog-forwarder');
+		$response = $this->container->exec('sv status syslog-forwarder');
+
+		$this->assertContains('run: syslog-forwarder', $response['result']);
+	}
+
+	/**
+	 * @testdox Container can be removed
+	 */
+	public function testShutdown()
+	{
+		$this->container->stop();
+		$this->container->remove();
+		$this->assertFalse($this->container->exists());
 	}
 }

@@ -25,6 +25,8 @@ It is possible to add a `control` subdirectory to add the management hooks descr
 
 This base image still provides `nano` as the preferred editor, which was replaced with `vim.tiny` in `phusion/baseimage`.
 
+A `wait-for` command is added to wait for services.
+
 For the use of the base image, the documentation on the [Phusion Baseimage website](http://phusion.github.io/baseimage-docker/)
 still applies.
 
@@ -50,6 +52,29 @@ To look around in the image, run:
 docker run -it --rm greencape/base /sbin/my_init -- bash -l
 ```
 
+## The `wait-for` command
+
+Some services need some time to get up and running. The `wait-for` command waits for the service to appear by
+looking for a matching PID. if the PID does not appear within a given period of time (defaults to 5 seconds),
+`wait-for` stops waiting. The current status of the service is reported.
+
+```bash
+root@649b980d7b2f:/# wait-for cron
+Waiting for cron . ok
+run: cron: (pid 21) 1s
+```
+```bash
+root@649b980d7b2f:/# wait-for sshd
+Waiting for sshd ...... timeout (waited 5 seconds)
+down: sshd: 7s
+```
+
+The timeout period can be set using the `WAITFOR_TIMEOUT` environment variable.
+
+```bash
+root@649b980d7b2f:/# WAITFOR_TIMEOUT=10 
+```
+    
 # Supported Docker versions
 
 This image is officially supported on Docker version 1.7.0.

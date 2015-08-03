@@ -4,7 +4,7 @@ source /build.d/buildconfig
 set -x
 
 ## Install init process.
-mv /build.d/bin/my_init /sbin/
+cp -a /build.d/bin/my_init /sbin/
 mkdir -p /etc/my_init.d
 mkdir -p /etc/container_environment
 touch /etc/container_environment.sh
