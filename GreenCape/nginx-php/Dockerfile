@@ -3,9 +3,6 @@ MAINTAINER Niels Braczek <nbraczek@bsds.de>
 
 ADD nginx.repo /etc/yum.repos.d/
 
-RUN yum -y install \
-    yum-plugin-replace
-
 ENV PHP_VERSION php56u
 
 RUN yum -y install \
