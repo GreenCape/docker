@@ -1,48 +1,54 @@
 FROM greencape/base:latest
 MAINTAINER Niels Braczek <nbraczek@bsds.de>
 
-ADD nginx.repo /etc/yum.repos.d/
+RUN add-apt-repository -y ppa:nginx/stable
+# RUN add-apt-repository -y ppa:ondrej/php
 
-ENV PHP_VERSION php56u
+ENV TERM "dumb"
 
-RUN yum -y install \
+RUN apt-get -y update \
+ && apt-get -y install --no-install-recommends --force-yes \
     nginx \
-    $PHP_VERSION \
-    $PHP_VERSION-common \
-    $PHP_VERSION-fpm \
-    $PHP_VERSION-process \
-    $PHP_VERSION-pecl-jsonc \
-    $PHP_VERSION-cli \
-    $PHP_VERSION-mysqlnd \
-    $PHP_VERSION-pdo \
-    $PHP_VERSION-devel \
-    $PHP_VERSION-gd \
-    $PHP_VERSION-pspell \
-    $PHP_VERSION-snmp \
-    $PHP_VERSION-xmlrpc \
-    $PHP_VERSION-xml \
-    $PHP_VERSION-pear \
-    $PHP_VERSION-mcrypt \
-    $PHP_VERSION-mbstring \
-    $PHP_VERSION-opcache \
+    php5 \
+    php5-common \
+    php5-fpm \
+    php5-cli \
+    php5-mysqlnd \
+    php5-gd \
+    php5-pspell \
+    php5-snmp \
+    php5-xmlrpc \
+    php5-mcrypt \
+    php5-dev \
+    php5-json \
+    php-pear \
+    # php-pdo \
+    # php-xml \
+    # php-mbstring \
+    # php-opcache \
+    # php-process \
     python-setuptools \
     postfix \
     gcc \
     make \
- && yum clean all
+ && apt-get autoremove \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN pecl install channel://pecl.php.net/xhprof-0.9.4 \
  && pecl install xdebug
 
-RUN echo "extension=xhprof.so" >> /etc/php.d/xhprof.ini \
- && echo "zend_extension=/usr/lib64/php/modules/xdebug.so" >> /etc/php.d/xdebug.ini
+#RUN echo "extension=xhprof.so" >> /etc/php5/cgi/conf.d/xhprof.ini \
+# && echo "extension=xhprof.so" >> /etc/php5/cli/conf.d/xhprof.ini \
+# && echo "zend_extension=/usr/lib64/php/modules/xdebug.so" >> /etc/php5/cgi/conf.d/xdebug.ini
+# && echo "zend_extension=/usr/lib64/php/modules/xdebug.so" >> /etc/php5/cli/conf.d/xdebug.ini
 
 RUN easy_install pip \
  && pip install "pip>=1.4,<1.5" --upgrade \
  && pip install supervisor
 
 RUN useradd webserver -u 666 \
- && gpasswd -a webserver apache \
+ && gpasswd -a webserver webserver \
  && mkdir -p /var/www/html/ \
  && chown -R webserver:webserver /var/www/html/
 

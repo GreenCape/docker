@@ -1,6 +1,6 @@
 # Nginx & PHP
 
-A Docker build which runs a CentOS 7 container with Nginx and PHP 5.6.
+A Docker build which runs a Ubuntu 14.04 container with Nginx and PHP 5.5.9.
 
 ## Configuration
 
@@ -10,23 +10,22 @@ The most current version of Nginx from the Nginx repository is used.
 
 ### PHP
 
-The most current version of PHP from the Centos repository is used.
+The most current version of PHP from the Ubuntu Trusty repository is used.
 
 Installed packages include
 
-  - `php-fpm`
-  - `php-mysql`
-  - `php-pdo`
-  - `php-devel`
-  - `php-gd`
-  - `php-pecl-memcache`
-  - `php-pspell`
-  - `php-snmp`
-  - `php-xmlrpc`
-  - `php-xml`
-  - `php-mcrypt`
-  - `php-mbstring`
-  - `php-imap`
+  - `php5-common`
+  - `php5-fpm`
+  - `php5-cli`
+  - `php5-mysqlnd`
+  - `php5-gd`
+  - `php5-pspell`
+  - `php5-snmp`
+  - `php5-xmlrpc`
+  - `php5-mcrypt`
+  - `php5-dev`
+  - `php5-json`
+  - `php-pear`
   - `php-pecl-xdebug`
   - `php-pecl-xhprof`
 
